@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../components/Header"; // Assuming Header is in a components folder
+import Header from "../../components/Header";
 
 const Contact = () => {
   return (
