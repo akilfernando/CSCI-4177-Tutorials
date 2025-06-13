@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home/Home'
 import Products from './pages/Products/Products'
 import Contact from './pages/Contact/Contact'
+import Signup from './pages/Auth/Signup'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -21,6 +22,7 @@ function App() {
           <Route path='/' element={<Home/>}> </Route>
           <Route path='/products' element={<Products/>}> </Route>
           <Route path='/contact' element={<Contact/>}> </Route>
+          <Route path='/register' element={<Signup/>}> </Route>
         </Routes>
       </Router>
     </>
