@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Button, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { Container, Button, Row, Col, Card, Alert } from 'react-bootstrap'; // Removed Spinner, added Card for skeleton
+import Skeleton from 'react-loading-skeleton'; // Import Skeleton
+import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton CSS
+
 import Header from '../../components/Header';
 import EmptyComponent from '../../components/EmptyComponent';
 import ProductCard from '../../components/ProductCard';
@@ -55,7 +58,6 @@ const Products = () => {
     }
   }, [productActionSuccess, productActionError, dispatch, isEditMode]);
 
-
   const handleCloseProductModal = () => {
     setShowProductModal(false);
     setInitialProductValues(null);
@@ -76,7 +78,7 @@ const Products = () => {
     setModalTitle('Edit Product');
     setSubmitButtonLabel('Save Changes');
     setInitialProductValues({
-      id: product.id,
+      id: product._id, // Use _id from MongoDB
       title: product.title,
       image: product.image,
       description: product.description,
@@ -110,32 +112,43 @@ const Products = () => {
           </Button>
         </div>
 
-        {loading && (
-          <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading Products...</span>
-            </Spinner>
-          </div>
-        )}
-
-        {error && (
+        {loading ? ( // Render skeleton cards when loading
+          <Row className="g-4">
+            {[...Array(8)].map((_, index) => ( // Display 8 skeleton cards
+              <Col key={index} xs={12} sm={6} md={4} lg={3}>
+                <Card style={{ width: "18rem" }}>
+                  <Skeleton height={180} /> {/* Placeholder for image */}
+                  <Card.Body>
+                    <Skeleton count={1} height={20} className="mb-2" /> {/* Placeholder for title */}
+                    <Skeleton count={2} className="mb-2" /> {/* Placeholder for description */}
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <Skeleton width={60} height={20} /> {/* Placeholder for price */}
+                      <div className="d-flex gap-3">
+                        <Skeleton circle width={24} height={24} /> {/* Placeholder for icons */}
+                        <Skeleton circle width={24} height={24} />
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ) : error ? ( // Display general list error
           <Alert variant="danger" className="text-center">
             Error: {error}
           </Alert>
-        )}
-
-        {!loading && !error && products.length === 0 ? (
+        ) : products.length === 0 ? ( // Display empty component if no products
           <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
             <EmptyComponent message="No products found." />
           </div>
-        ) : (
+        ) : ( // Display actual products
           <Row className="g-4">
             {products.map((product) => (
-              <Col key={product.id} xs={12} sm={6} md={4} lg={3}>
+              <Col key={product._id} xs={12} sm={6} md={4} lg={3}>
                 <ProductCard
                   product={product}
                   onEdit={() => handleEditProductClick(product)}
-                  onDelete={() => handleDeleteProduct(product.id)}
+                  onDelete={() => handleDeleteProduct(product._id)}
                 />
               </Col>
             ))}

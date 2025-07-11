@@ -1,32 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Button from 'react-bootstrap/Button'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home/Home'
-import Products from './pages/Products/Products'
-import Contact from './pages/Contact/Contact'
-import Signup from './pages/Auth/Signup'
+import React, { useState, Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
 
-import 'bootstrap/dist/css/bootstrap.min.css'
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Lazy load page components
+const Home = lazy(() => import('./pages/Home/Home'));
+const Products = lazy(() => import('./pages/Products/Products'));
+const Contact = lazy(() => import('./pages/Contact/Contact'));
+const Signup = lazy(() => import('./pages/Auth/Signup'));
+const Login = lazy(() => import('./pages/Auth/Login')); // Placeholder for Login page
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute')); // Lazy load ProtectedRoute
 
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
       <Router>
-        <Routes>
-          <Route path='/' element={<Home/>}> </Route>
-          <Route path='/products' element={<Products/>}> </Route>
-          <Route path='/contact' element={<Contact/>}> </Route>
-          <Route path='/register' element={<Signup/>}> </Route>
-        </Routes>
+        <Suspense fallback={
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column' }}>
+            <Spinner animation="border" role="status" className="mb-3" />
+            <p>Loading application...</p>
+          </div>
+        }>
+          <Routes>
+            <Route path='/' element={<Home/>}> </Route>
+            <Route path='/register' element={<Signup/>}> </Route>
+            <Route path='/login' element={<Login/>}> </Route> {/* Route for Login page */}
+            <Route path='/contact' element={<Contact/>}> </Route>
+
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path='/products' element={<Products/>}> </Route>
+            </Route>
+
+            {/* An admin-only route */}
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path='/admin-dashboard' element={<div>Admin Dashboard Content</div>}> </Route>
+            </Route>
+
+            {/* Route for unauthorized access */}
+            <Route path='/unauthorized' element={
+              <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <h2>403 - Unauthorized Access</h2>
+                <p>You do not have permission to view this page.</p>
+                <Button onClick={() => window.location.href = '/'}>Go to Home</Button>
+              </div>
+            }> </Route>
+
+            {/* Catch-all for undefined routes */}
+            <Route path='*' element={
+              <div style={{ textAlign: 'center', marginTop: '50px' }}>
+                <h2>404 - Page Not Found</h2>
+                <p>The page you are looking for does not exist.</p>
+                <Button onClick={() => window.location.href = '/'}>Go to Home</Button>
+              </div>
+            }> </Route>
+
+          </Routes>
+        </Suspense>
       </Router>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
