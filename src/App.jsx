@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { Button, useState, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -10,7 +10,6 @@ const Home = lazy(() => import('./pages/Home/Home'));
 const Products = lazy(() => import('./pages/Products/Products'));
 const Contact = lazy(() => import('./pages/Contact/Contact'));
 const Signup = lazy(() => import('./pages/Auth/Signup'));
-const Login = lazy(() => import('./pages/Auth/Login')); // Placeholder for Login page
 const ProtectedRoute = lazy(() => import('./components/ProtectedRoute')); // Lazy load ProtectedRoute
 
 
@@ -28,7 +27,6 @@ function App() {
           <Routes>
             <Route path='/' element={<Home/>}> </Route>
             <Route path='/register' element={<Signup/>}> </Route>
-            <Route path='/login' element={<Login/>}> </Route> {/* Route for Login page */}
             <Route path='/contact' element={<Contact/>}> </Route>
 
             {/* Protected Routes */}
